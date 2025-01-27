@@ -1,0 +1,13 @@
+﻿@model IEnumerable<BookingSalonApp.Models.Salon>
+
+<h1>Salons</h1>
+
+@foreach (var salon in Model)
+{
+    <div>
+        <h3>@salon.Name</h3>
+        <p>Location: @salon.Location</p>
+        <p>Working Hours: @salon.WorkingHours</p>
+        <a asp-action="Details" asp-route-id="@salon.Id">View Details</a>
+    </div>
+}

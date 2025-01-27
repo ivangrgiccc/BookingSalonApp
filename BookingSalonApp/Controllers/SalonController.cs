@@ -22,6 +22,7 @@ namespace BookingSalonApp.Controllers
         public IActionResult Details(int id)
         {
             var salon = _context.Salons.Where(s => s.Id == id).FirstOrDefault();
+            
             if (salon == null)
                 return NotFound();
             salon.Employees = _context.Employees.Where(e => e.SalonId == id).ToList();
@@ -42,6 +43,43 @@ namespace BookingSalonApp.Controllers
                 return RedirectToAction("Index");
             }
             return View(salon);
+        }
+        public IActionResult Book(BookingViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var reservation = new Reservation
+                {
+                    UserId =model.UserId,
+                    SalonId = model.SalonId,
+                    EmployeeId = model.EmployeeId,
+                    Date = model.Date,
+                };
+                _context.Reservations.Add(reservation);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult Book(int salonId)
+        {
+            var salon = _context.Salons
+                .Include(s => s.Employees) 
+                .Include(s => s.Services) 
+                .FirstOrDefault(s => s.Id == salonId);
+            if (salon == null)
+            {
+                return NotFound(); 
+            }
+            var bookingViewModel = new BookingViewModel
+            {
+                SalonId = salon.Id,
+                SalonName = salon.Name,
+                Employees = salon.Employees, 
+                                            
+            };
+            return View("~/Views/Reservation/Book.cshtml", bookingViewModel);
         }
     }
 }

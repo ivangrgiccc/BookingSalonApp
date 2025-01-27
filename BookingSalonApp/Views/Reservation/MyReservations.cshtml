@@ -1,0 +1,16 @@
+﻿@model IEnumerable<BookingSalonApp.Models.Reservation>
+
+<h1>My Reservations</h1>
+
+@foreach (var reservation in Model)
+{
+    <div>
+        <p>Salon: @reservation.Salon.Name</p>
+        <p>Services: @reservation.Services</p>
+        <p>Employee: @reservation.Employee.Name</p>
+        <p>Date: @reservation.Date</p>
+        <form asp-action="Cancel" asp-route-id="@reservation.Id" method="post">
+            <button type="submit">Cancel</button>
+        </form>
+    </div>
+}

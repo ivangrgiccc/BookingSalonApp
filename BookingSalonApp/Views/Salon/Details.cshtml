@@ -1,0 +1,19 @@
+﻿@model BookingSalonApp.Models.Salon
+
+<h1>@Model.Name</h1>
+<p>Location: @Model.Location</p>
+<p>Working Hours: @Model.WorkingHours</p>
+
+<h3>Services</h3>
+@foreach (var service in Model.Services)
+{
+    <p>@service.Name - @service.Price $</p>
+}
+
+<h3>Employees</h3>
+@foreach (var employee in Model.Employees)
+{
+    <p>@employee.Name</p>
+}
+
+<a asp-action="Book" asp-route-salonId="@Model.Id">Book Now</a>
