@@ -9,6 +9,7 @@
         public string Location { get; set; }
         public string WorkingHours { get; set; }
         public string ImagePath { get; set; }
+
         public List<Employee> Employees { get; set; }
         public List<Service> Services { get; set; }
     }
