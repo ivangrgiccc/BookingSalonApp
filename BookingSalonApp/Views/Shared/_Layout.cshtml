@@ -7,6 +7,27 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingSalonApp.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            background-image: url('https://static.vecteezy.com/system/resources/previews/006/897/001/non_2x/professional-equipment-for-hairdressing-salon-hair-stylist-tools-horizontal-seamless-pattern-linear-icons-haircut-hair-coloring-golden-outline-on-a-black-background-for-printing-banners-vector.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+        }
+
+        .container {
+            padding: 20px;
+            border-radius: 10px;
+        }
+        /* Footer margin to create space */
+        footer {
+            margin-top: 30px; /* Add space above the footer */
+        }
+        /* Default text color for dark background */
+        .text-dark {
+            color: black; /* Setting text color to black */
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -38,10 +59,9 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - BookingSalonApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - BookingSalonApp
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

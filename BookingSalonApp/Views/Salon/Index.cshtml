@@ -1,13 +1,29 @@
 ﻿@model IEnumerable<BookingSalonApp.Models.Salon>
-
-<h1>Salons</h1>
-
-@foreach (var salon in Model)
-{
-    <div>
-        <h3>@salon.Name</h3>
-        <p>Location: @salon.Location</p>
-        <p>Working Hours: @salon.WorkingHours</p>
-        <a asp-action="Details" asp-route-id="@salon.Id">View Details</a>
-    </div>
+@{
+    ViewData["Title"] = "Salons";
 }
+<div class="container my-4">
+    <h1 class="text-center text-dark">Welcome to Our Salons!</h1>
+    <p class="lead text-center text-dark">Explore the best salons in town and book your appointment today.</p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">No salons found.</div>
+    }
+
+    <div class="row">
+        @foreach (var salon in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title text-primary">@salon.Name</h3>
+                        <p class="card-text text-dark">Location: <strong>@salon.Location</strong></p>
+                        <p class="card-text text-dark">Working Hours: <strong>@salon.WorkingHours</strong></p>
+                        <a asp-action="Details" asp-route-id="@salon.Id" class="btn btn-light">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
