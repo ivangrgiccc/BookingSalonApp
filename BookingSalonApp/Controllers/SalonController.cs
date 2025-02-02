@@ -1,38 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using BookingSalonApp.Data;
 using BookingSalonApp.Models;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace BookingSalonApp.Controllers
 {
     public class SalonController : Controller
     {
         private readonly AppDbContext _context;
+
         public SalonController(AppDbContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             var salons = _context.Salons.ToList();
-
             return View(salons);
         }
+
         public IActionResult Details(int id)
         {
-            var salon = _context.Salons.Where(s => s.Id == id).FirstOrDefault();
-            
+            var salon = _context.Salons
+                .Include(s => s.Employees)
+                .Include(s => s.Services)
+                .FirstOrDefault(s => s.Id == id);
+
             if (salon == null)
                 return NotFound();
-            salon.Employees = _context.Employees.Where(e => e.SalonId == id).ToList();
-            salon.Services = _context.Services.Where(s => s.Id == id).ToList();
+
             return View(salon);
         }
+
         public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
         public IActionResult Create(Salon salon)
         {
@@ -44,42 +51,66 @@ namespace BookingSalonApp.Controllers
             }
             return View(salon);
         }
-        public IActionResult Book(BookingViewModel model)
+
+        public IActionResult Edit(int id)
+        {
+            var salon = _context.Salons
+                .Include(s => s.Employees)
+                .Include(s => s.Services)
+                .FirstOrDefault(s => s.Id == id);
+
+            if (salon == null)
+                return NotFound();
+
+            return View(salon);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(int id, Salon salon, List<Service> Services, string DeletedEmployeeIds, string DeletedServiceIds)
         {
             if (ModelState.IsValid)
             {
-                var reservation = new Reservation
+                var existingSalon = _context.Salons
+                    .Include(s => s.Employees)
+                    .Include(s => s.Services)
+                    .FirstOrDefault(s => s.Id == id);
+
+                if (existingSalon == null)
+                    return NotFound();
+
+                if (!string.IsNullOrEmpty(DeletedEmployeeIds))
                 {
-                    UserId =model.UserId,
-                    SalonId = model.SalonId,
-                    EmployeeId = model.EmployeeId,
-                    Date = model.Date,
-                };
-                _context.Reservations.Add(reservation);
+                    var deletedEmployeeIds = DeletedEmployeeIds.Split(',').Select(int.Parse).ToList();
+                    var deletedEmployees = _context.Employees.Where(e => deletedEmployeeIds.Contains(e.Id)).ToList();
+                    _context.Employees.RemoveRange(deletedEmployees);
+                }
+
+                if (!string.IsNullOrEmpty(DeletedServiceIds))
+                {
+                    var deletedServiceIds = DeletedServiceIds.Split(',').Select(int.Parse).ToList();
+                    var deletedServices = _context.Services.Where(s => deletedServiceIds.Contains(s.Id)).ToList();
+                    _context.Services.RemoveRange(deletedServices);
+                }
+
+                foreach (var service in Services)
+                {
+                    service.SalonId = salon.Id;
+                    _context.Services.Add(service);
+                }
+
+                existingSalon.Name = salon.Name;
+                existingSalon.Location = salon.Location;
+                existingSalon.Address = salon.Address;
+                existingSalon.WorkingHours = salon.WorkingHours;
+                existingSalon.GoogleMapsIframe = salon.GoogleMapsIframe;
+                existingSalon.ImagePath = salon.ImagePath;
+
                 _context.SaveChanges();
-                return RedirectToAction("Index");
+
+                return RedirectToAction("Details", new { id = salon.Id });
             }
-            return View(model);
-        }
-        [HttpGet]
-        public IActionResult Book(int salonId)
-        {
-            var salon = _context.Salons
-                .Include(s => s.Employees) 
-                .Include(s => s.Services) 
-                .FirstOrDefault(s => s.Id == salonId);
-            if (salon == null)
-            {
-                return NotFound(); 
-            }
-            var bookingViewModel = new BookingViewModel
-            {
-                SalonId = salon.Id,
-                SalonName = salon.Name,
-                Employees = salon.Employees, 
-                                            
-            };
-            return View("~/Views/Reservation/Book.cshtml", bookingViewModel);
+
+            return View(salon);
         }
     }
 }

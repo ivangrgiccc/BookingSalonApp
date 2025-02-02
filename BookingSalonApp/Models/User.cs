@@ -1,24 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿using Microsoft.AspNetCore.Identity;  
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 namespace BookingSalonApp.Models
 {
-    public class User
+    public class User : IdentityUser 
     {
-        public int Id { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Ime je obavezno.")]
         public string FirstName { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Prezime je obavezno.")]
         public string LastName { get; set; }
-        
-        [Required]
-        [Phone]
-        public string PhoneNumber { get; set; }
-        
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        public List<Reservation> Reservations { get; set; }
+        public List<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }

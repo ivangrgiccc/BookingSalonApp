@@ -4,22 +4,26 @@ using BookingSalonApp.Models;
 
 namespace BookingSalonApp.Controllers
 {
-    public class UserController: Controller
+    public class UserController : Controller
     {
         private readonly AppDbContext _context;
+
         public UserController(AppDbContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             var users = _context.Users.ToList();
-            return View();
+            return View(users);
         }
+
         public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
         public IActionResult Create(User user)
         {

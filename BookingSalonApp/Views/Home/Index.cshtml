@@ -1,8 +1,117 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Početna Stranica";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Sekcija -->
+<div class="hero-section text-center">
+    <div class="hero-overlay">
+        <div class="container">
+            <h1 class="display-4 hero-title">Dobrodošli na Booking Salon App</h1>
+            <p class="lead hero-subtitle">Pronađite i rezervirajte svoj omiljeni salon u nekoliko koraka.</p>
+            <a href="/Salon" class="btn btn-primary btn-lg hero-button">Pregledaj Salone</a>
+        </div>
+    </div>
 </div>
+
+<!-- Poziv na Akciju Sekcija -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h2 class="section-title">Zašto odabrati nas?</h2>
+            <p class="section-subtitle">Povezujemo vas s najboljim salonima u vašem gradu. Brzo, jednostavno i pouzdano.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Sekcija sa Karakteristikama -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="feature-card p-4">
+                    <i class="fas fa-calendar-alt fa-3x mb-3 feature-icon"></i>
+                    <h4>Brza Rezervacija</h4>
+                    <p>Rezervirajte termin u samo nekoliko klikova.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-card p-4">
+                    <i class="fas fa-star fa-3x mb-3 feature-icon"></i>
+                    <h4>Pouzdani Saloni</h4>
+                    <p>Pregledajte ocjene i recenzije korisnika.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-card p-4">
+                    <i class="fas fa-map-marker-alt fa-3x mb-3 feature-icon"></i>
+                    <h4>Lokacija</h4>
+                    <p>Pronađite salone u blizini.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prilagođeni CSS -->
+<style>
+    .hero-section {
+        background-image: url('/Images/backround.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        position: relative;
+    }
+
+    .hero-overlay {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .hero-button {
+        padding: 0.75rem 2rem;
+        font-size: 1.25rem;
+        border-radius: 30px;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .feature-icon {
+        color: #007bff;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.25rem;
+        color: #6c757d;
+    }
+</style>

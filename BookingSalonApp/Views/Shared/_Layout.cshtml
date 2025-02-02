@@ -1,39 +1,86 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BookingSalonApp</title>
+    <title>@ViewData["BookingA"] - BookingSalonApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingSalonApp.styles.css" asp-append-version="true" />
     <style>
-        body {
-            background-image: url('https://static.vecteezy.com/system/resources/previews/006/897/001/non_2x/professional-equipment-for-hairdressing-salon-hair-stylist-tools-horizontal-seamless-pattern-linear-icons-haircut-hair-coloring-golden-outline-on-a-black-background-for-printing-banners-vector.jpg');
-            background-size: cover;
-            background-position: center;
+        html, body {
+            height: 100%;
             margin: 0;
         }
 
+        .navbar-brand {
+            font-family: 'Playfair Display', cursive;
+            font-size: 32px;
+            color: black !important;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-in-out;
+        }
+
+            .navbar-brand:hover {
+                transform: scale(1.1);
+                color: gray !important;
+            }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            background-image: url('/Images/backround.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
         .container {
+            flex: 1;
             padding: 20px;
             border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
         }
-        /* Footer margin to create space */
+
         footer {
-            margin-top: 30px; /* Add space above the footer */
+            flex-shrink: 0;
+            margin-top: 30px;
         }
-        /* Default text color for dark background */
+
         .text-dark {
-            color: black; /* Setting text color to black */
+            color: black;
         }
+
+        /* Tooltip for navbar items */
+        .nav-item .nav-link {
+            position: relative;
+        }
+
+            .nav-item .nav-link:hover::after {
+                content: attr(data-bs-tooltip);
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #000;
+                color: #fff;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+     
     </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BookingSalonApp</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BOOKINGSALONAPP</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -41,14 +88,45 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Salon" asp-action="Index" data-bs-tooltip="Explore our salons">Salons</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link text-dark"
+                                   href="/Reservation/MyReservations?userId=@User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)"
+                                   data-bs-tooltip="View your bookings">My Reservations</a>
+                            }
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Salon">Salons</a>
-                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Salons" data-bs-tooltip="Manage salons">Admin Panel</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Welcome, @User.Identity.Name!</span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                    <button type="submit" class="nav-link btn btn-link text-dark" data-bs-tooltip="Logout">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login" data-bs-tooltip="Login to your account">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register" data-bs-tooltip="Create a new account">Register</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -59,11 +137,7 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - BookingSalonApp
-        </div>
-    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

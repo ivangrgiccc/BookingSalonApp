@@ -1,12 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <ItemGroup>
+    <Compile Remove="wwwroot\Images\e4d6cc95-7875-47f9-b9df-ffb109335717_DALLE2025-02-0121.56.30-Amodernandstylishbackgrounddesignforabarbershopbookingapp.Theimageshouldfeaturesleekminimalisticelementswithasophisticatedandpr-ezgif.com-webp-to-jpg-converter.jpg\**" />
+    <Content Remove="wwwroot\Images\e4d6cc95-7875-47f9-b9df-ffb109335717_DALLE2025-02-0121.56.30-Amodernandstylishbackgrounddesignforabarbershopbookingapp.Theimageshouldfeaturesleekminimalisticelementswithasophisticatedandpr-ezgif.com-webp-to-jpg-converter.jpg\**" />
+    <EmbeddedResource Remove="wwwroot\Images\e4d6cc95-7875-47f9-b9df-ffb109335717_DALLE2025-02-0121.56.30-Amodernandstylishbackgrounddesignforabarbershopbookingapp.Theimageshouldfeaturesleekminimalisticelementswithasophisticatedandpr-ezgif.com-webp-to-jpg-converter.jpg\**" />
+    <None Remove="wwwroot\Images\e4d6cc95-7875-47f9-b9df-ffb109335717_DALLE2025-02-0121.56.30-Amodernandstylishbackgrounddesignforabarbershopbookingapp.Theimageshouldfeaturesleekminimalisticelementswithasophisticatedandpr-ezgif.com-webp-to-jpg-converter.jpg\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\Images\backround.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
@@ -14,5 +22,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>

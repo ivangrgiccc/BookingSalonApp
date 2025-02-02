@@ -1,8 +1,10 @@
 ﻿@model BookingSalonApp.Models.Salon
-<h1>Delete Salon</h1>
-<p>Are you sure you want to delete the salon <strong>@Model.Name</strong>?</p>
+<h1>Obriši salon</h1>
+<p>Jesi siguran da zelis obrisati salon <strong>@Model.Name</strong>?</p>
 <form asp-action="DeleteSalon" method="post">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Salons" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Obriši</button>
+    <a asp-action="Salons" class="btn btn-secondary">Odustani</a>
 </form>
+
+

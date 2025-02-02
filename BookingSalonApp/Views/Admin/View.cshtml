@@ -1,8 +1,8 @@
 ﻿@model BookingSalonApp.Models.Salon
 @{
-    ViewData["Title"] = "Edit Salon";
+    ViewData["Title"] = "Uredi salon";
 }
-<h1>Edit Salon</h1>
+<h1>Uredi salon</h1>
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
 
@@ -31,8 +31,26 @@
         <input asp-for="ImagePath" class="form-control" />
         <span asp-validation-for="ImagePath" class="text-danger"></span>
     </div>
+
+    <div class="mt-4">
+        <h3 class="text-dark">Find Us Here:</h3>
+        <div style="width: 100%">
+            <iframe width="100%" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                    src="@Model.GoogleMapsIframe" allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
     <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary">Spremi promijene</button>
     </div>
 </form>
 <div asp-validation-summary="All" class="text-danger"></div>
+
+<style>
+    body {
+        background-image: url('https://static.vecteezy.com/system/resources/previews/006/897/001/non_2x/professional-equipment-for-hairdressing-salon-hair-stylist-tools-horizontal-seamless-pattern-linear-icons-haircut-hair-coloring-golden-outline-on-a-black-background-for-printing-banners-vector.jpg');
+        background-size: cover;
+        background-position: center;
+    }
+</style>

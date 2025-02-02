@@ -1,40 +1,77 @@
 ﻿@model BookingSalonApp.Models.Salon
+
 @{
-    ViewData["Title"] = "Create Salon";
+    ViewData["Title"] = "Kreiraj Salon";
 }
-<h1>Create Salon</h1>
-<form asp-action="CreateSalon" method="post">
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateSalon" method="post" enctype="multipart/form-data">
     <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" placeholder="Salon Name" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <label for="Name">Naziv Salona</label>
+        <input type="text" class="form-control" id="Name" name="Name" required />
     </div>
+
     <div class="form-group">
-        <label asp-for="Location"></label>
-        <input asp-for="Location" class="form-control" placeholder="Location" required />
-        <span asp-validation-for="Location" class="text-danger"></span>
+        <label for="Location">Lokacija</label>
+        <input type="text" class="form-control" id="Location" name="Location" required />
     </div>
+
     <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" placeholder="Address" required />
-        <span asp-validation-for="Address" class="text-danger"></span>
+        <label for="Address">Adresa</label>
+        <input type="text" class="form-control" id="Address" name="Address" required />
     </div>
+
     <div class="form-group">
-        <label asp-for="WorkingHours"></label>
-        <input asp-for="WorkingHours" class="form-control" placeholder="Working Hours" required />
-        <span asp-validation-for="WorkingHours" class="text-danger"></span>
+        <label for="GoogleMapsIframe">Google Maps Iframe</label>
+        <input type="text" class="form-control" id="GoogleMapsIframe" name="GoogleMapsIframe" />
     </div>
+
     <div class="form-group">
-        <label asp-for="ImagePath"></label>
-        <input asp-for="ImagePath" class="form-control" placeholder="Image Path" />
-        <span asp-validation-for="ImagePath" class="text-danger"></span>
+        <label for="logoFile">Logo</label>
+        <input type="file" class="form-control" id="logoFile" name="logoFile" />
     </div>
-    <div class="form-group">
-        <label asp-for="GoogleMapsIframe"></label>
-        <input asp-for="GoogleMapsIframe" class="form-control" placeholder="Iframe kod" />
+
+    <!-- Polje za zaposlenike (dinamički prikazano) -->
+    <div class="form-group" id="employeesSection" style="display:none;">
+        <label for="Employees">Zaposlenici</label>
+        <select name="employeeIds" multiple class="form-control">
+            @foreach (var employee in ViewBag.Employees as List<BookingSalonApp.Models.Employee>)
+            {
+                <option value="@employee.Id">@employee.Name</option>
+            }
+        </select>
     </div>
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Create Salon</button>
+
+    <!-- Checkbox za odabir zaposlenika -->
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="addEmployees" name="addEmployees" />
+        <label class="form-check-label" for="addEmployees">Dodaj Zaposlenike</label>
     </div>
+
+    <button type="submit" class="btn btn-primary">Spremi Salon</button>
 </form>
-<div asp-validation-summary="All" class="text-danger"></div>
+
+<script>
+    // Kada korisnik označi checkbox za dodavanje zaposlenika
+    document.getElementById("addEmployees").addEventListener("change", function() {
+        var employeesSection = document.getElementById("employeesSection");
+        if (this.checked) {
+            employeesSection.style.display = "block"; // Prikazivanje polja
+        } else {
+            employeesSection.style.display = "none"; // Sakrivanje polja
+        }
+    });
+
+    // Provjera da li je checkbox označen prilikom učitavanja stranice
+    window.onload = function() {
+        var employeesSection = document.getElementById("employeesSection");
+        var addEmployeesCheckbox = document.getElementById("addEmployees");
+
+        if (addEmployeesCheckbox.checked) {
+            employeesSection.style.display = "block"; // Ako je checkbox označen, prikazujemo polje
+        } else {
+            employeesSection.style.display = "none"; // Inače, sakrivamo
+        }
+    }
+</script>

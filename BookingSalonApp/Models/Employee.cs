@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookingSalonApp.Models
 {
@@ -6,11 +7,16 @@ namespace BookingSalonApp.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Employee name is required.")]
+        [Required(ErrorMessage = "Ime djelatnika je obavezno")]
         public string Name { get; set; }
         public string? ImagePath { get; set; }
         public int SalonId { get; set; }
-        public Salon Salon { get; set; } 
+
+        [ValidateNever]
+        public Salon Salon { get; set; }
+
         public List<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public List<WorkingHour> WorkingHours { get; set; } = new List<WorkingHour>();
+
     }
 }

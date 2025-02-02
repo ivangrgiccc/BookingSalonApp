@@ -1,16 +1,69 @@
 ﻿@model IEnumerable<BookingSalonApp.Models.Reservation>
+@using BookingSalonApp.Models
 
-<h1>My Reservations</h1>
+<h1 class="text-center mb-4">Moje Rezervacije</h1>
 
-@foreach (var reservation in Model)
-{
-    <div>
-        <p>Salon: @reservation.Salon.Name</p>
-        <p>Services: @reservation.Services</p>
-        <p>Employee: @reservation.Employee.Name</p>
-        <p>Date: @reservation.Date</p>
-        <form asp-action="Cancel" asp-route-id="@reservation.Id" method="post">
-            <button type="submit">Cancel</button>
-        </form>
-    </div>
-}
+<div class="container">
+    @foreach (var reservation in Model)
+    {
+        <div class="reservation-card mb-4 p-4 border rounded shadow-sm">
+            <!-- Naziv Salona -->
+            <h3 class="text-primary">@reservation.Salon?.Name</h3>
+
+            <!-- Provjera ima li rezervacija usluga -->
+            @if (reservation.ReservationServices != null && reservation.ReservationServices.Any())
+            {
+                <p><strong>Usluge:</strong></p>
+                <ul class="list-group mb-3">
+                    @foreach (var reservationService in reservation.ReservationServices)
+                    {
+                        <li class="list-group-item">@reservationService.Service?.Name</li>  <!-- Siguran pristup Service.Name -->
+                    }
+                </ul>
+            }
+            else
+            {
+                <p><em>Nema odabranih usluga za ovu rezervaciju.</em></p>
+            }
+
+            <!-- Ime Zaposlenika -->
+            <p><strong>Zaposlenik:</strong> @reservation.Employee?.Name</p> <!-- Siguran pristup Employee.Name -->
+            <!-- Datum rezervacije -->
+            <p><strong>Datum:</strong> @reservation.Date.ToString("yyyy-MM-dd HH:mm")</p>
+
+            <!-- Gumb za otkazivanje rezervacije -->
+            <form asp-action="Cancel" asp-route-id="@reservation.Id" method="post" class="d-inline-block">
+                <button type="submit" class="btn btn-danger btn-sm">Otkaži Rezervaciju</button>
+            </form>
+        </div>
+    }
+</div>
+
+<!-- Opcionalno: Dodajte prilagođene stilove za kartice rezervacija -->
+<style>
+    .reservation-card {
+        background-color: #f8f9fa;
+    }
+
+        .reservation-card h3 {
+            font-size: 1.5rem;
+        }
+
+    .list-group-item {
+        font-size: 1.1rem;
+    }
+
+    .reservation-card p {
+        font-size: 1rem;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+</style>

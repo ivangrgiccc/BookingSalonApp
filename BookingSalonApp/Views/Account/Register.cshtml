@@ -1,0 +1,119 @@
+﻿@model BookingSalonApp.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Registracija";
+}
+
+<div class="register-container">
+    <div class="register-card">
+        <h2 class="text-center mb-4">Kreirajte svoj račun</h2>
+        <form asp-action="Register" method="post">
+            <!-- Unos imena -->
+            <div class="form-group">
+                <label asp-for="FirstName" class="form-label">Ime</label>
+                <input asp-for="FirstName" class="form-control custom-input" required />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <!-- Unos prezimena -->
+            <div class="form-group">
+                <label asp-for="LastName" class="form-label">Prezime</label>
+                <input asp-for="LastName" class="form-control custom-input" required />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <!-- Unos e-maila -->
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">E-mail</label>
+                <input asp-for="Email" class="form-control custom-input" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <!-- Unos lozinke -->
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Lozinka</label>
+                <input asp-for="Password" type="password" class="form-control custom-input" required />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <!-- Potvrda lozinke -->
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="form-label">Potvrdi lozinku</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control custom-input" required />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <!-- Gumb za registraciju -->
+            <button type="submit" class="btn btn-primary btn-block">Registriraj se</button>
+        </form>
+
+        <!-- Sažetak validacije -->
+        <div asp-validation-summary="All" class="text-danger mt-3"></div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: #f8f8f8;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .register-card {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 450px;
+    }
+
+        .register-card h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: 25px;
+        border: 1px solid #ddd;
+        padding: 0 15px;
+        font-size: 16px;
+        background-color: #f9f9f9;
+    }
+
+        .form-control:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+        }
+
+    .btn {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        height: 45px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: #004085;
+            cursor: pointer;
+        }
+</style>

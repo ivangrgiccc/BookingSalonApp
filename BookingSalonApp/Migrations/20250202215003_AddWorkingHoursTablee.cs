@@ -5,7 +5,7 @@
 namespace BookingSalonApp.Migrations
 {
     /// <inheritdoc />
-    public partial class FixSalon : Migration
+    public partial class AddWorkingHoursTablee : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

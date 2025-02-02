@@ -1,41 +1,149 @@
 ﻿@model BookingSalonApp.Models.Salon
 @{
-    ViewData["Title"] = "Salon Details";
+    ViewData["Title"] = "Detalji Salona";
 }
-<div class="container my-4">
-    <div class="bg-dark rounded p-5">
-        <h1 class="text-center text-white">@Model.Name</h1>
-        <p class="text-white">Location: <strong>@Model.Location</strong></p>
-        <p class="text-white">Working Hours: <strong>@Model.WorkingHours</strong></p>
-        <h3 class="text-white">Services</h3>
-        <ul class="list-group mb-3">
+
+<div class="container my-5">
+    <div class="bg-white rounded p-5 shadow-lg salon-details-card">
+        <h1 class="text-center mb-4 salon-name">@Model.Name</h1>
+        <p class="location mb-3"><strong>Lokacija:</strong> @Model.Location</p>
+
+        <h3 class="text-dark mb-3">Usluge</h3>
+        <ul class="list-group mb-4 service-list">
             @foreach (var service in Model.Services)
             {
-                <li class="list-group-item text-white">@service.Name - @service.Price.ToString("C")</li>
+                <li class="list-group-item service-item">@service.Name - @service.Price.ToString("C")</li>
             }
         </ul>
-        <h3 class="text-white">Employees</h3>
-        <ul class="list-group">
+
+        <h3 class="text-dark mb-3">Zaposlenici</h3>
+        <ul class="list-group employee-list">
             @foreach (var employee in Model.Employees)
             {
-                <li class="list-group-item text-white">@employee.Name</li>
+                <li class="list-group-item employee-item">@employee.Name</li>
             }
         </ul>
+
         <div class="mt-4">
-            <h3 class="text-white">Find Us Here:</h3>
-            <div style="width: 100%">
-                <iframe width="100%" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-                        src="@Model.GoogleMapsIframe" allowfullscreen>
-                </iframe>
-            </div>
+            <h3 class="text-dark">Pronađite nas ovdje:</h3>
+
+            @if (!string.IsNullOrEmpty(Model.GoogleMapsIframe))
+            {
+                <div style="width: 100%">
+                    <iframe width="100%" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                            src="@Model.GoogleMapsIframe.Replace("&amp;", "&")" allowfullscreen>
+                    </iframe>
+                </div>
+            }
+            else
+            {
+                <p class="text-dark">Karta nije dostupna za ovu lokaciju.</p>
+            }
         </div>
-        <a asp-action="Book" asp-route-salonId="@Model.Id" class="btn btn-primary mt-3">Book Now</a>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Reservation" asp-action="Book" asp-route-salonId="@Model.Id" class="btn btn-primary">
+                Rezerviraj
+            </a>
+        </div>
     </div>
 </div>
+
 <style>
+    /* Pozadinsko stiliziranje */
     body {
-        background-image: url('https://static.vecteezy.com/system/resources/previews/006/897/001/non_2x/professional-equipment-for-hairdressing-salon-hair-stylist-tools-horizontal-seamless-pattern-linear-icons-haircut-hair-coloring-golden-outline-on-a-black-background-for-printing-banners-vector.jpg');
+        background-image: url('/Images/backround.jpg');
         background-size: cover;
         background-position: center;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    /* Stiliziranje kartice Salona */
+    .salon-details-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        margin: auto;
+        padding: 40px;
+        border-radius: 10px;
+    }
+
+    /* Stiliziranje naziva Salona */
+    .salon-name {
+        font-size: 36px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #343a40;
+    }
+
+    /* Lokacija i radno vrijeme */
+    .location, .working-hours {
+        font-size: 18px;
+        margin-bottom: 1rem;
+        color: #6c757d;
+    }
+
+    /* Usluge */
+    .service-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .service-item {
+        font-size: 18px;
+        padding: 12px;
+        background-color: #f8f9fa;
+        color: #343a40;
+        border: 1px solid #e9ecef;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .service-item:hover {
+            background-color: #e9ecef;
+        }
+
+    /* Zaposlenici */
+    .employee-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .employee-item {
+        font-size: 18px;
+        padding: 12px;
+        background-color: #f8f9fa;
+        color: #343a40;
+        border: 1px solid #e9ecef;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .employee-item:hover {
+            background-color: #e9ecef;
+        }
+
+    /* Gumb za rezervaciju */
+    .book-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        background-color: #007bff;
+        border: none;
+    }
+
+        .book-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+    /* Stiliziranje mape */
+    iframe {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 </style>

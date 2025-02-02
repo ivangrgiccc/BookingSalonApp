@@ -1,14 +1,13 @@
 ﻿@model IEnumerable<BookingSalonApp.Models.Salon>
-<h1>Manage Salons</h1>
-<a asp-action="CreateSalon" class="btn btn-primary">Add New Salon</a>
+<h1>Upravljanje salonima</h1>
+<a asp-action="CreateSalon" class="btn btn-primary">Dodaj novi salon</a>
 <table class="table">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Address</th>
-            <th>Working Hours</th>
-            <th>Actions</th>
+            <th>Ime</th>
+            <th>Lokacija</th>
+            <th>Adresa</th>
+            <th>Akcije</th>
         </tr>
     </thead>
     <tbody>
@@ -18,10 +17,11 @@
                 <td>@salon.Name</td>
                 <td>@salon.Location</td>
                 <td>@salon.Address</td>
-                <td>@salon.WorkingHours</td>
                 <td>
                     <a asp-action="EditSalon" asp-route-id="@salon.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="DeleteSalon" asp-route-id="@salon.Id" class="btn btn-danger">Delete</a>
+                    <a href="@Url.Action("AddService", "Admin", new { salonId = salon.Id })" class="btn btn-success">Dodaj uslugu</a>
+
                 </td>
             </tr>
         }

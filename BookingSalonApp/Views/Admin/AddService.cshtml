@@ -1,0 +1,58 @@
+﻿@model BookingSalonApp.Models.Salon
+
+<h1>Dodaj uslugu salonu: @Model.Name</h1>
+
+<form asp-action="AddService" method="post">
+    <input type="hidden" name="salonId" value="@Model.Id" />
+
+    <div class="form-group">
+        <label for="serviceName">Ime usluge</label>
+        <input type="text" name="serviceName" class="form-control" placeholder="Naziv usluge" required />
+    </div>
+
+    <div class="form-group">
+        <label for="price">Cijena</label>
+        <input type="number" name="price" class="form-control" placeholder="Cijena" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Dodaj uslugu</button>
+</form>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<hr />
+
+<h2>Postojeće usluge</h2>
+
+@if (Model.Services != null && Model.Services.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Naziv usluge</th>
+                <th>Cijena</th>
+                <th>Akcija</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var service in Model.Services)
+            {
+                <tr>
+                    <td>@service.Name</td>
+                    <td>@service.Price</td>
+                    <td>
+                        <form asp-action="DeleteService" method="post">
+                            <input type="hidden" name="salonId" value="@Model.Id" />
+                            <input type="hidden" name="serviceId" value="@service.Id" />
+                            <button type="submit" class="btn btn-danger">Obriši</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Još nisu dodane usluge.</p>
+}
