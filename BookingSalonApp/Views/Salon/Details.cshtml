@@ -6,7 +6,16 @@
 <div class="container my-5">
     <div class="bg-white rounded p-5 shadow-lg salon-details-card">
         <h1 class="text-center mb-4 salon-name">@Model.Name</h1>
+
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <div class="text-center mb-4">
+                <img src="~/@Model.ImagePath" alt="Salon Logo" style="max-width: 150px; max-height: 150px;" />
+            </div>
+        }
+
         <p class="location mb-3"><strong>Lokacija:</strong> @Model.Location</p>
+        <p class="address mb-3"><strong>Adresa:</strong> @Model.Address</p>
 
         <h3 class="text-dark mb-3">Usluge</h3>
         <ul class="list-group mb-4 service-list">
@@ -50,7 +59,6 @@
 </div>
 
 <style>
-    /* Pozadinsko stiliziranje */
     body {
         background-image: url('/Images/backround.jpg');
         background-size: cover;
@@ -58,7 +66,6 @@
         font-family: 'Roboto', sans-serif;
     }
 
-    /* Stiliziranje kartice Salona */
     .salon-details-card {
         background-color: rgba(255, 255, 255, 0.9);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -68,7 +75,6 @@
         border-radius: 10px;
     }
 
-    /* Stiliziranje naziva Salona */
     .salon-name {
         font-size: 36px;
         font-weight: bold;
@@ -77,14 +83,19 @@
         color: #343a40;
     }
 
-    /* Lokacija i radno vrijeme */
-    .location, .working-hours {
+    .salon-logo {
+        max-width: 200px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .location, .address {
         font-size: 18px;
         margin-bottom: 1rem;
         color: #6c757d;
     }
 
-    /* Usluge */
     .service-list {
         list-style-type: none;
         padding-left: 0;
@@ -105,7 +116,6 @@
             background-color: #e9ecef;
         }
 
-    /* Zaposlenici */
     .employee-list {
         list-style-type: none;
         padding-left: 0;
@@ -126,7 +136,6 @@
             background-color: #e9ecef;
         }
 
-    /* Gumb za rezervaciju */
     .book-btn {
         padding: 15px 30px;
         font-size: 18px;
@@ -141,7 +150,6 @@
             transform: scale(1.05);
         }
 
-    /* Stiliziranje mape */
     iframe {
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookingSalonApp.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,7 +63,9 @@ namespace BookingSalonApp.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WorkingHoursId = table.Column<int>(type: "int", nullable: true),
                     GoogleMapsIframe = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OpeningTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    ClosingTime = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -219,6 +221,34 @@ namespace BookingSalonApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AvailableSlots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    SalonId = table.Column<int>(type: "int", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AvailableSlots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AvailableSlots_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AvailableSlots_Salons_SalonId",
+                        column: x => x.SalonId,
+                        principalTable: "Salons",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reservations",
                 columns: table => new
                 {
@@ -366,6 +396,16 @@ namespace BookingSalonApp.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AvailableSlots_EmployeeId",
+                table: "AvailableSlots",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AvailableSlots_SalonId",
+                table: "AvailableSlots",
+                column: "SalonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_SalonId",
                 table: "Employees",
                 column: "SalonId");
@@ -428,6 +468,9 @@ namespace BookingSalonApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "AvailableSlots");
 
             migrationBuilder.DropTable(
                 name: "ReservationService1");

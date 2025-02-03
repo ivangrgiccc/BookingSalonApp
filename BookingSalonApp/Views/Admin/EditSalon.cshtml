@@ -2,8 +2,12 @@
 
 <h1>Uredi Zaposlenike Salona</h1>
 
-<form asp-action="EditEmployees" method="post">
+<form asp-action="EditSalon" method="post">
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="Location" />
+    <input type="hidden" asp-for="Address" />
+    <input type="hidden" asp-for="GoogleMapsIframe" />
 
     <h3>Zaposlenici</h3>
     <div id="employeeContainer">
@@ -13,20 +17,8 @@
                 <label asp-for="Employees[i].Name"></label>
                 <input asp-for="Employees[i].Name" class="form-control" placeholder="Ime Zaposlenika" required />
                 <input type="hidden" asp-for="Employees[i].SalonId" value="@Model.Id" />
+                <button type="button" class="btn btn-danger btn-sm mt-2 removeEmployeeBtn">Obriši</button>
                 <span asp-validation-for="Employees[i].Name" class="text-danger"></span>
-
-                <h4>Radno vrijeme</h4>
-                @for (var day = DayOfWeek.Monday; day <= DayOfWeek.Sunday; day++)
-                {
-                    <div>
-                        <label>@day</label>
-                        <input type="time" name="Employees[${i}].WorkingHours[${day}].StartTime" class="form-control"
-                               value="@Model.Employees[i].WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == day)?.StartTime?.ToString(@"hh\:mm")" />
-
-                        <input type="time" name="Employees[${i}].WorkingHours[${day}].EndTime" class="form-control"
-                               value="@Model.Employees[i].WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == day)?.EndTime?.ToString(@"hh\:mm")" />
-                    </div>
-                }
             </div>
         }
     </div>
@@ -44,6 +36,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         let employeeIndex = @Model.Employees.Count;
 
+        // Dodavanje zaposlenika
         document.getElementById("addEmployeeBtn").addEventListener("click", function () {
             let employeeContainer = document.getElementById("employeeContainer");
 
@@ -54,26 +47,23 @@
                 <label for="Employees_${employeeIndex}__Name">Ime Zaposlenika</label>
                 <input type="text" name="Employees[${employeeIndex}].Name" class="form-control" placeholder="Ime Zaposlenika" required />
                 <input type="hidden" name="Employees[${employeeIndex}].SalonId" value="@Model.Id" />
+                <button type="button" class="btn btn-danger btn-sm mt-2 removeEmployeeBtn">Obriši</button>
                 <span class="text-danger field-validation-valid" data-valmsg-for="Employees[${employeeIndex}].Name" data-valmsg-replace="true"></span>
-
-                <h4>Radno vrijeme</h4>
-    @for (var day = DayOfWeek.Monday; day <= DayOfWeek.Sunday; day++)
-    {
-                        <div>
-                            <label>@day</label>
-                            <input type="time" name="Employees[${employeeIndex}].WorkingHours[${day}].StartTime" class="form-control" />
-                            <input type="time" name="Employees[${employeeIndex}].WorkingHours[${day}].EndTime" class="form-control" />
-                        </div>
-    }
             `;
 
             employeeContainer.appendChild(newEmployeeDiv);
 
             employeeIndex++;
         });
+
+        // Brisanje zaposlenika
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("removeEmployeeBtn")) {
+                event.target.parentElement.remove();
+            }
+        });
     });
 </script>
-
 
 <style>
     body {

@@ -137,15 +137,22 @@ namespace BookingSalonApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAvailableSlots(int employeeId, DateTime date)
+        public async Task<IActionResult> GetAvailableSlots(int salonId, int employeeId, DateTime date)
         {
+            var salon = await _context.Salons.FindAsync(salonId);
+
+            if (salon == null)
+                return NotFound();
+
             var reservations = await _context.Reservations
                 .Where(r => r.EmployeeId == employeeId && r.Date.Date == date.Date)
                 .ToListAsync();
 
             var availableSlots = new List<string>();
-            var workStartTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
-            var workEndTime = new DateTime(date.Year, date.Month, date.Day, 17, 0, 0);
+
+            // Dobivanje radnog vremena iz salona
+            var workStartTime = date.Date.Add(salon.OpeningTime);
+            var workEndTime = date.Date.Add(salon.ClosingTime);
 
             var allSlots = new List<DateTime>();
             for (var time = workStartTime; time < workEndTime; time = time.AddMinutes(40))
@@ -163,5 +170,7 @@ namespace BookingSalonApp.Controllers
 
             return Json(availableSlots);
         }
+
+
     }
 }

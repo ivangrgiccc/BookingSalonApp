@@ -3,7 +3,15 @@
     ViewData["Title"] = "Uredi salon";
 }
 <h1>Uredi salon</h1>
-<form asp-action="Edit" method="post">
+
+@if (!string.IsNullOrEmpty(Model.ImagePath))
+{
+    <div class="text-center mb-4">
+        <img src="~/Images/@System.IO.Path.GetFileName(Model.ImagePath)" alt="Salon Slika" class="salon-image">
+    </div>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
 
     <div class="form-group">
@@ -26,10 +34,10 @@
         <input asp-for="WorkingHours" class="form-control" required />
         <span asp-validation-for="WorkingHours" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="ImagePath"></label>
-        <input asp-for="ImagePath" class="form-control" />
-        <span asp-validation-for="ImagePath" class="text-danger"></span>
+        <label>Nova slika</label>
+        <input type="file" name="logoFile" class="form-control" />
     </div>
 
     <div class="mt-4">
@@ -45,6 +53,7 @@
         <button type="submit" class="btn btn-primary">Spremi promijene</button>
     </div>
 </form>
+
 <div asp-validation-summary="All" class="text-danger"></div>
 
 <style>
@@ -52,5 +61,12 @@
         background-image: url('https://static.vecteezy.com/system/resources/previews/006/897/001/non_2x/professional-equipment-for-hairdressing-salon-hair-stylist-tools-horizontal-seamless-pattern-linear-icons-haircut-hair-coloring-golden-outline-on-a-black-background-for-printing-banners-vector.jpg');
         background-size: cover;
         background-position: center;
+    }
+
+    .salon-image {
+        max-width: 300px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 </style>

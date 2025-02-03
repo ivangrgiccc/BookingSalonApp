@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSalonApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250202215003_AddWorkingHoursTablee")]
-    partial class AddWorkingHoursTablee
+    [Migration("20250203230109_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,38 @@ namespace BookingSalonApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BookingSalonApp.Models.AvailableSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("SalonId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SalonId");
+
+                    b.ToTable("AvailableSlots");
+                });
 
             modelBuilder.Entity("BookingSalonApp.Models.Employee", b =>
                 {
@@ -94,6 +126,9 @@ namespace BookingSalonApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan>("ClosingTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("GoogleMapsIframe")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -108,6 +143,9 @@ namespace BookingSalonApp.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("OpeningTime")
+                        .HasColumnType("time");
 
                     b.Property<int?>("WorkingHoursId")
                         .HasColumnType("int");
@@ -409,6 +447,23 @@ namespace BookingSalonApp.Migrations
                     b.HasIndex("ServicesId");
 
                     b.ToTable("ReservationService1");
+                });
+
+            modelBuilder.Entity("BookingSalonApp.Models.AvailableSlot", b =>
+                {
+                    b.HasOne("BookingSalonApp.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalonApp.Models.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Salon");
                 });
 
             modelBuilder.Entity("BookingSalonApp.Models.Employee", b =>

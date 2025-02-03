@@ -1,154 +1,83 @@
-﻿@model IEnumerable<BookingSalonApp.Models.Salon>
+﻿@model List<BookingSalonApp.Models.Salon>
+
 @{
-    ViewData["Title"] = "Frizerski Saloni";
+    ViewData["Title"] = "Saloni";
 }
 
-<!DOCTYPE html>
-<html lang="hr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a, #2c3e50);
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
+<div class="container my-5">
+    <h1 class="text-center mb-5">Saloni</h1>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: black;
-            text-align: center;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .lead {
-            font-size: 1.25rem;
-            color: #b3b3b3;
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-            .card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-            }
-
-        .card-body {
-            padding: 25px;
-        }
-
-        .card-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: black;
-            margin-bottom: 15px;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            color: #b3b3b3;
-            margin-bottom: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            border: none;
-            color: #1a1a1a;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: background 0.3s ease;
-        }
-
-            .btn-primary:hover {
-                background: linear-gradient(135deg, #fad0c4, #ff9a9e);
-            }
-
-        .alert-warning {
-            background: rgba(255, 243, 205, 0.1);
-            border: 1px solid rgba(255, 238, 186, 0.2);
-            color: #fff3cd;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .col-md-4 {
-            flex: 1 1 calc(33.333% - 40px);
-            max-width: calc(33.333% - 40px);
-        }
-
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="container my-4">
-        <h1>Rezervirajte svoj Frizerski Salon</h1>
-        <p class="lead">Otkrijte premium frizerske salone i rezervirajte svoj termin s stilom.</p>
-
-        @if (!Model.Any())
+    <div class="salons-grid">
+        @foreach (var salon in Model)
         {
-            <div class="alert alert-warning">Nema pronađenih frizerskih salona.</div>
-        }
+            <div class="bg-white rounded p-5 shadow-lg salon-card mb-4">
+                <h2 class="text-center mb-4 salon-name">@salon.Name</h2>
 
-        <div class="row">
-            @foreach (var salon in Model)
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm">
-                        <img src="Images/@salon.ImagePath">
-                        <div class="card-body">
-                            <h3 class="card-title">@salon.Name</h3>
-                            <p class="card-text">📍 <strong>@salon.Location</strong></p>
-                            <a asp-action="Details" asp-route-id="@salon.Id" class="btn btn-primary">Rezerviraj sada</a>
-                        </div>
+                @if (!string.IsNullOrEmpty(salon.ImagePath))
+                {
+                    <div class="text-center mb-4">
+                        <img src="~/@salon.ImagePath" alt="Salon Logo" style="max-width: 150px; max-height: 150px;" />
                     </div>
+                }
+
+                <p class="location mb-3"><strong>Lokacija:</strong> @salon.Location</p>
+                <p class="address mb-3"><strong>Adresa:</strong> @salon.Address</p>
+
+                <div class="text-center mt-4">
+                    <a asp-controller="Salon" asp-action="Details" asp-route-id="@salon.Id" class="btn btn-primary">
+                        Detalji
+                    </a>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    body {
+        background-image: url('/Images/backround.jpg');
+        background-size: cover;
+        background-position: center;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .salons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .salon-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        border-radius: 10px;
+    }
+
+    .salon-name {
+        font-size: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #343a40;
+    }
+
+    .location, .address {
+        font-size: 18px;
+        margin-bottom: 1rem;
+        color: #6c757d;
+    }
+
+    .btn-primary {
+        font-size: 16px;
+        padding: 12px 25px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+</style>

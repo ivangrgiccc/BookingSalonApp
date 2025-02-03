@@ -15,6 +15,7 @@ namespace BookingSalonApp.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<ReservationService> ReservationServices { get; set; }
         public DbSet<WorkingHour> WorkingHours { get; set; } // Dodan DbSet za WorkingHours
+        public DbSet<AvailableSlot> AvailableSlots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -32,46 +32,5 @@
         <input type="file" class="form-control" id="logoFile" name="logoFile" />
     </div>
 
-    <!-- Polje za zaposlenike (dinamički prikazano) -->
-    <div class="form-group" id="employeesSection" style="display:none;">
-        <label for="Employees">Zaposlenici</label>
-        <select name="employeeIds" multiple class="form-control">
-            @foreach (var employee in ViewBag.Employees as List<BookingSalonApp.Models.Employee>)
-            {
-                <option value="@employee.Id">@employee.Name</option>
-            }
-        </select>
-    </div>
-
-    <!-- Checkbox za odabir zaposlenika -->
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="addEmployees" name="addEmployees" />
-        <label class="form-check-label" for="addEmployees">Dodaj Zaposlenike</label>
-    </div>
-
     <button type="submit" class="btn btn-primary">Spremi Salon</button>
 </form>
-
-<script>
-    // Kada korisnik označi checkbox za dodavanje zaposlenika
-    document.getElementById("addEmployees").addEventListener("change", function() {
-        var employeesSection = document.getElementById("employeesSection");
-        if (this.checked) {
-            employeesSection.style.display = "block"; // Prikazivanje polja
-        } else {
-            employeesSection.style.display = "none"; // Sakrivanje polja
-        }
-    });
-
-    // Provjera da li je checkbox označen prilikom učitavanja stranice
-    window.onload = function() {
-        var employeesSection = document.getElementById("employeesSection");
-        var addEmployeesCheckbox = document.getElementById("addEmployees");
-
-        if (addEmployeesCheckbox.checked) {
-            employeesSection.style.display = "block"; // Ako je checkbox označen, prikazujemo polje
-        } else {
-            employeesSection.style.display = "none"; // Inače, sakrivamo
-        }
-    }
-</script>
