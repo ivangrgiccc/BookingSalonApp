@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using BookingSalonApp.Models;
+
 
 namespace BookingSalonApp.Models
 {

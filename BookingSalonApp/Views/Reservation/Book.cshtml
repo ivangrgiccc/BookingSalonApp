@@ -9,6 +9,28 @@
             <input type="hidden" asp-for="SalonId" />
             <input type="hidden" asp-for="SalonName" />
 
+            <!-- Skrivena polja za Employees, Services i WorkingHours -->
+            @for (int i = 0; i < Model.Employees?.Count; i++)
+            {
+                <input type="hidden" asp-for="Employees[i].Id" />
+                <input type="hidden" asp-for="Employees[i].Name" />
+            }
+
+            @for (int i = 0; i < Model.Services?.Count; i++)
+            {
+                <input type="hidden" asp-for="Services[i].Id" />
+                <input type="hidden" asp-for="Services[i].Name" />
+                <input type="hidden" asp-for="Services[i].Price" />
+            }
+
+            @for (int i = 0; i < Model.WorkingHours?.Count; i++)
+            {
+                <input type="hidden" asp-for="WorkingHours[i].Id" />
+                <input type="hidden" asp-for="WorkingHours[i].DayOfWeek" />
+                <input type="hidden" asp-for="WorkingHours[i].StartTime" />
+                <input type="hidden" asp-for="WorkingHours[i].EndTime" />
+            }
+
             <!-- Odabir Usluga -->
             <div class="mb-4">
                 <label class="form-label fw-bold">💈 Odaberite Usluge:</label>
@@ -30,6 +52,7 @@
                         <p class="text-danger">Nema dostupnih usluga!</p>
                     }
                 </div>
+                <span asp-validation-for="SelectedServices" class="text-danger"></span>
             </div>
 
             <!-- Odabir Zaposlenika -->
@@ -49,12 +72,14 @@
                         <option value="">Nema dostupnih zaposlenika</option>
                     }
                 </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
 
             <!-- Datum -->
             <div class="mb-4">
                 <label class="form-label fw-bold">📅 Odaberite Datum:</label>
                 <input type="date" asp-for="Date" id="dateSelect" class="form-control mb-3" required>
+                <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
             <!-- Slobodni Termini -->
@@ -63,6 +88,7 @@
                 <select asp-for="TimeSlot" id="availableSlots" class="form-select" required>
                     <option value="">Odaberite zaposlenika i datum</option>
                 </select>
+                <span asp-validation-for="TimeSlot" class="text-danger"></span>
             </div>
 
             <!-- Gumb za Slanje -->
@@ -72,7 +98,6 @@
                 </button>
             </div>
         </form>
-
 
         <!-- Pregled Validacije -->
         <div asp-validation-summary="All" class="text-danger mt-3"></div>
@@ -170,5 +195,3 @@
         }
     }
 </script>
-
-

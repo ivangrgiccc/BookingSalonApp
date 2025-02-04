@@ -58,63 +58,68 @@ namespace BookingSalonApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Book(BookingViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    ModelState.AddModelError("", "Korisnik nije autentificiran.");
-                    return View(model);
-                }
-
-                if (DateTime.TryParse(model.Date, out var selectedDate))
-                {
-                    var salon = await _context.Salons
-                        .Include(s => s.WorkingHours)
-                        .FirstOrDefaultAsync(s => s.Id == model.SalonId);
-
-                    if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDate.DayOfWeek && w.StartTime <= selectedDate.TimeOfDay && w.EndTime >= selectedDate.TimeOfDay))
-                    {
-                        ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
-                        return View(model);
-                    }
-
-                    var reservation = new Reservation
-                    {
-                        UserId = userId,
-                        EmployeeId = model.EmployeeId ?? 0,
-                        SalonId = model.SalonId,
-                        Date = selectedDate
-                    };
-
-                    _context.Reservations.Add(reservation);
-                    await _context.SaveChangesAsync();
-
-                    if (model.SelectedServices != null)
-                    {
-                        foreach (var serviceId in model.SelectedServices)
-                        {
-                            var reservationService = new ReservationService
-                            {
-                                ReservationId = reservation.Id,
-                                ServiceId = serviceId
-                            };
-                            _context.ReservationServices.Add(reservationService);
-                        }
-                        await _context.SaveChangesAsync();
-                    }
-
-                    return RedirectToAction("MyReservations", new { userId = reservation.UserId });
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Neispravan termin.");
-                }
+                return View(model); // If model is invalid, return with error messages
             }
 
-            return View(model);
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                ModelState.AddModelError("", "Korisnik nije autentificiran.");
+                return View(model);
+            }
+
+            // Check if Date is valid
+            if (model.Date == default)
+            {
+                ModelState.AddModelError("", "Datum nije ispravan.");
+                return View(model);
+            }
+
+            var selectedDate = model.Date;
+
+            var salon = await _context.Salons
+                .Include(s => s.WorkingHours)
+                .FirstOrDefaultAsync(s => s.Id == model.SalonId);
+
+            if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDate.DayOfWeek && w.StartTime <= selectedDate.TimeOfDay && w.EndTime >= selectedDate.TimeOfDay))
+            {
+                ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
+                return View(model);
+            }
+
+            // Create the Reservation object
+            var reservation = new Reservation
+            {
+                UserId = userId,
+                EmployeeId = model.EmployeeId ?? 0, // If EmployeeId is null, default to 0
+                SalonId = model.SalonId,
+                Date = selectedDate
+            };
+
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            // Handle selected services if any
+            if (model.SelectedServices != null)
+            {
+                foreach (var serviceId in model.SelectedServices)
+                {
+                    var reservationService = new ReservationService
+                    {
+                        ReservationId = reservation.Id,
+                        ServiceId = serviceId
+                    };
+                    _context.ReservationServices.Add(reservationService);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("MyReservations", new { userId = reservation.UserId });
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int id)
@@ -177,6 +182,5 @@ namespace BookingSalonApp.Controllers
 
             return Json(availableSlots);
         }
-
     }
 }
