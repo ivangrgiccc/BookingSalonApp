@@ -219,7 +219,7 @@ namespace BookingSalonApp.Controllers
             if (checkRoleResult != null) return checkRoleResult;
 
             var salon = await _context.Salons
-                .Include(s => s.Employees) 
+                .Include(s => s.Employees)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (salon == null)
@@ -250,7 +250,7 @@ namespace BookingSalonApp.Controllers
             {
                 foreach (var employee in salon.Employees)
                 {
-                    if (!string.IsNullOrWhiteSpace(employee.Name)) 
+                    if (!string.IsNullOrWhiteSpace(employee.Name))
                     {
                         existingSalon.Employees.Add(new Employee
                         {
@@ -263,9 +263,10 @@ namespace BookingSalonApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Salons)); 
+            return RedirectToAction(nameof(Salons));
 
 
 
+        }
     }
 }

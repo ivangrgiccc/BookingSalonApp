@@ -68,13 +68,15 @@ namespace BookingSalonApp.Controllers
                     return View(model);
                 }
 
-                if (DateTime.TryParse(model.Date, out var selectedDate))
+                if (DateTime.TryParse($"{model.Date}T{model.TimeSlot}", out var selectedDateTime))
                 {
                     var salon = await _context.Salons
                         .Include(s => s.WorkingHours)
                         .FirstOrDefaultAsync(s => s.Id == model.SalonId);
 
-                    if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDate.DayOfWeek && w.StartTime <= selectedDate.TimeOfDay && w.EndTime >= selectedDate.TimeOfDay))
+                    if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDateTime.DayOfWeek
+                        && w.StartTime <= selectedDateTime.TimeOfDay
+                        && w.EndTime >= selectedDateTime.TimeOfDay))
                     {
                         ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
                         return View(model);
@@ -85,7 +87,7 @@ namespace BookingSalonApp.Controllers
                         UserId = userId,
                         EmployeeId = model.EmployeeId ?? 0,
                         SalonId = model.SalonId,
-                        Date = selectedDate
+                        Date = selectedDateTime
                     };
 
                     _context.Reservations.Add(reservation);
@@ -116,6 +118,7 @@ namespace BookingSalonApp.Controllers
             return View(model);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Cancel(int id)
         {
@@ -139,10 +142,18 @@ namespace BookingSalonApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableSlots(int salonId, int employeeId, DateTime date)
         {
-            var salon = await _context.Salons.FindAsync(salonId);
+            var salon = await _context.Salons
+                .Include(s => s.WorkingHours)
+                .FirstOrDefaultAsync(s => s.Id == salonId);
 
             if (salon == null)
                 return NotFound();
+
+            // Provera da salon ima radno vreme
+            if (salon.OpeningTime == TimeSpan.Zero || salon.ClosingTime == TimeSpan.Zero)
+            {
+                return Json(new List<string>()); // Ako nema radnog vremena, nema dostupnih termina
+            }
 
             var reservations = await _context.Reservations
                 .Where(r => r.EmployeeId == employeeId && r.Date.Date == date.Date)
@@ -150,7 +161,6 @@ namespace BookingSalonApp.Controllers
 
             var availableSlots = new List<string>();
 
-            // Dobivanje radnog vremena iz salona
             var workStartTime = date.Date.Add(salon.OpeningTime);
             var workEndTime = date.Date.Add(salon.ClosingTime);
 
@@ -170,7 +180,6 @@ namespace BookingSalonApp.Controllers
 
             return Json(availableSlots);
         }
-
 
     }
 }

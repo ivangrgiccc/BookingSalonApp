@@ -1,28 +1,23 @@
-﻿using System;
+﻿using BookingSalonApp.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace BookingSalonApp.Models
+public class BookingViewModel
 {
-    public class BookingViewModel
-    {
-        public int SalonId { get; set; }
-        public string SalonName { get; set; }
+    public int SalonId { get; set; }
+    public string SalonName { get; set; }
+    public List<Employee> Employees { get; set; }
+    public List<Service> Services { get; set; }
+    public int? EmployeeId { get; set; }
+    public List<WorkingHours> WorkingHours { get; set; }
+    public List<int> SelectedServices { get; set; }
 
-        // Osiguravamo da lista zaposlenika nije null
-        public List<Employee> Employees { get; set; } = new List<Employee>();
+    [Required(ErrorMessage = "Datum je obavezan.")]
+    public string Date { get; set; } // OVO OSTAVLJAMO
 
-        public int? EmployeeId { get; set; }
-        public string Date { get; set; }
+    [Required(ErrorMessage = "Termin je obavezan.")]
+    public string TimeSlot { get; set; }
 
-        // Osiguravamo da lista odabranih usluga nije null
-        public List<int> SelectedServices { get; set; } = new List<int>();
-
-        // UserId može biti null jer korisnik možda nije prijavljen
-        public int? UserId { get; set; }
-
-        // Osiguravamo da lista usluga nije null
-        public List<Service> Services { get; set; } = new List<Service>();
-        public List<WorkingHour> WorkingHours { get; set; } // Dodajte WorkingHours ovdje
-
-    }
+    public int? UserId { get; set; }
 }

@@ -51,10 +51,16 @@
                 </select>
             </div>
 
+            <!-- Datum -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">📅 Odaberite Datum:</label>
+                <input type="date" asp-for="Date" id="dateSelect" class="form-control mb-3" required>
+            </div>
+
             <!-- Slobodni Termini -->
             <div class="mb-4">
                 <label class="form-label fw-bold">🕒 Slobodni Termini:</label>
-                <select id="availableSlots" class="form-select" required>
+                <select asp-for="TimeSlot" id="availableSlots" class="form-select" required>
                     <option value="">Odaberite zaposlenika i datum</option>
                 </select>
             </div>
@@ -66,6 +72,7 @@
                 </button>
             </div>
         </form>
+
 
         <!-- Pregled Validacije -->
         <div asp-validation-summary="All" class="text-danger mt-3"></div>
@@ -131,21 +138,25 @@
     document.getElementById("dateSelect").addEventListener("change", updateAvailableSlots);
 
     async function updateAvailableSlots() {
+        var salonId = "@Model.SalonId"; // Uzima salonId iz modela
         var employeeId = document.getElementById("employeeSelect").value;
         var date = document.getElementById("dateSelect").value;
 
         if (employeeId && date) {
-            var response = await fetch(`/Reservation/GetAvailableSlots?employeeId=${employeeId}&date=${date}`);
+            // Formatiraj datum u odgovarajući format
+            var formattedDate = new Date(date).toISOString();
+
+            var response = await fetch(`/Reservation/GetAvailableSlots?salonId=${salonId}&employeeId=${employeeId}&date=${formattedDate}`);
             var availableSlots = await response.json();
 
             var slotSelect = document.getElementById("availableSlots");
-            slotSelect.innerHTML = "<option value=''>Odaberite Termin</option>"; // Resetiraj dostupne termine
+            slotSelect.innerHTML = "<option value=''>Odaberite Termin</option>";
 
             if (availableSlots.length > 0) {
                 availableSlots.forEach(function (slot) {
                     var option = document.createElement("option");
                     option.value = slot;
-                    option.textContent = slot;
+                    option.textContent = new Date(slot).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     slotSelect.appendChild(option);
                 });
                 slotSelect.disabled = false;
@@ -159,3 +170,4 @@
         }
     }
 </script>
+
