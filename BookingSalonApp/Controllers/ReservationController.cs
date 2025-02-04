@@ -68,15 +68,13 @@ namespace BookingSalonApp.Controllers
                     return View(model);
                 }
 
-                if (DateTime.TryParse($"{model.Date}T{model.TimeSlot}", out var selectedDateTime))
+                if (DateTime.TryParse(model.Date, out var selectedDate))
                 {
                     var salon = await _context.Salons
                         .Include(s => s.WorkingHours)
                         .FirstOrDefaultAsync(s => s.Id == model.SalonId);
 
-                    if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDateTime.DayOfWeek
-                        && w.StartTime <= selectedDateTime.TimeOfDay
-                        && w.EndTime >= selectedDateTime.TimeOfDay))
+                    if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDate.DayOfWeek && w.StartTime <= selectedDate.TimeOfDay && w.EndTime >= selectedDate.TimeOfDay))
                     {
                         ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
                         return View(model);
@@ -87,7 +85,7 @@ namespace BookingSalonApp.Controllers
                         UserId = userId,
                         EmployeeId = model.EmployeeId ?? 0,
                         SalonId = model.SalonId,
-                        Date = selectedDateTime
+                        Date = selectedDate
                     };
 
                     _context.Reservations.Add(reservation);
@@ -117,7 +115,6 @@ namespace BookingSalonApp.Controllers
 
             return View(model);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int id)
