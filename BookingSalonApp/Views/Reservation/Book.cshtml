@@ -5,39 +5,17 @@
     <div class="card shadow-lg p-4 booking-card">
         <h1 class="text-center mb-4 booking-title">📅 Rezervirajte Termin</h1>
 
-        <form asp-action="Book" method="post">
+        <form asp-action="Book" method="post" novalidate>
             <input type="hidden" asp-for="SalonId" />
             <input type="hidden" asp-for="SalonName" />
-
-            <!-- Skrivena polja za Employees, Services i WorkingHours -->
-            @for (int i = 0; i < Model.Employees?.Count; i++)
-            {
-                <input type="hidden" asp-for="Employees[i].Id" />
-                <input type="hidden" asp-for="Employees[i].Name" />
-            }
-
-            @for (int i = 0; i < Model.Services?.Count; i++)
-            {
-                <input type="hidden" asp-for="Services[i].Id" />
-                <input type="hidden" asp-for="Services[i].Name" />
-                <input type="hidden" asp-for="Services[i].Price" />
-            }
-
-            @for (int i = 0; i < Model.WorkingHours?.Count; i++)
-            {
-                <input type="hidden" asp-for="WorkingHours[i].Id" />
-                <input type="hidden" asp-for="WorkingHours[i].DayOfWeek" />
-                <input type="hidden" asp-for="WorkingHours[i].StartTime" />
-                <input type="hidden" asp-for="WorkingHours[i].EndTime" />
-            }
 
             <!-- Odabir Usluga -->
             <div class="mb-4">
                 <label class="form-label fw-bold">💈 Odaberite Usluge:</label>
                 <div class="services-list">
-                    @if (Model.Services != null && Model.Services.Any())
+                    @if (ViewData["Services"] is List<Service> services && services.Any())
                     {
-                        @foreach (var service in Model.Services)
+                        @foreach (var service in services)
                         {
                             <div class="form-check service-item">
                                 <input type="checkbox" name="SelectedServices" value="@service.Id" class="form-check-input" id="service-@service.Id" />
@@ -60,9 +38,9 @@
                 <label class="form-label fw-bold">👨‍🔧 Odaberite Zaposlenika:</label>
                 <select asp-for="EmployeeId" class="form-select" required id="employeeSelect">
                     <option value="">-- Odaberite Zaposlenika --</option>
-                    @if (Model.Employees != null && Model.Employees.Any())
+                    @if (ViewData["Employees"] is List<Employee> employees && employees.Any())
                     {
-                        @foreach (var employee in Model.Employees)
+                        @foreach (var employee in employees)
                         {
                             <option value="@employee.Id">@employee.Name</option>
                         }

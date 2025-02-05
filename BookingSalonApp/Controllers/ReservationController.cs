@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BookingSalonApp.Data;
 using BookingSalonApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace BookingSalonApp.Controllers
 {
@@ -42,13 +43,15 @@ namespace BookingSalonApp.Controllers
             if (salon == null)
                 return NotFound();
 
+            // Proslijedite podatke u ViewData
+            ViewData["Employees"] = salon.Employees.ToList();
+            ViewData["Services"] = salon.Services.ToList();
+            ViewData["WorkingHours"] = salon.WorkingHours.ToList();
+
             var model = new BookingViewModel
             {
                 SalonId = salon.Id,
                 SalonName = salon.Name,
-                Employees = salon.Employees.ToList(),
-                Services = salon.Services.ToList(),
-                WorkingHours = salon.WorkingHours.ToList(),
                 UserId = int.TryParse(_userManager.GetUserId(User), out var userId) ? (int?)userId : null
             };
 
@@ -60,6 +63,20 @@ namespace BookingSalonApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // Repopulate ViewData ako je potrebno
+                var salonForRepopulate = await _context.Salons
+                    .Include(s => s.Employees)
+                    .Include(s => s.Services)
+                    .Include(s => s.WorkingHours)
+                    .FirstOrDefaultAsync(s => s.Id == model.SalonId);
+
+                if (salonForRepopulate != null)
+                {
+                    ViewData["Employees"] = salonForRepopulate.Employees.ToList();
+                    ViewData["Services"] = salonForRepopulate.Services.ToList();
+                    ViewData["WorkingHours"] = salonForRepopulate.WorkingHours.ToList();
+                }
+
                 return View(model); // If model is invalid, return with error messages
             }
 
@@ -78,13 +95,40 @@ namespace BookingSalonApp.Controllers
                 return View(model);
             }
 
-            var selectedDate = model.Date;
+            // Pretvori odabrano vrijeme iz 12-satnog formata u 24-satni format
+            DateTime parsedTime;
+            if (!DateTime.TryParseExact(model.TimeSlot, "h:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedTime))
+            {
+                ModelState.AddModelError("", "Neispravan format vremena.");
+                return View(model);
+            }
 
-            var salon = await _context.Salons
+            // Pretvori DateTime u TimeSpan
+            var selectedTime = parsedTime.TimeOfDay;
+
+            // Provjera radnog vremena salona
+            var salonForValidation = await _context.Salons
                 .Include(s => s.WorkingHours)
                 .FirstOrDefaultAsync(s => s.Id == model.SalonId);
 
-            if (salon == null || !salon.WorkingHours.Any(w => w.DayOfWeek == selectedDate.DayOfWeek && w.StartTime <= selectedDate.TimeOfDay && w.EndTime >= selectedDate.TimeOfDay))
+            if (salonForValidation == null)
+            {
+                ModelState.AddModelError("", "Salon nije pronađen.");
+                return View(model);
+            }
+
+            // Pronađi radno vrijeme za odabrani dan u tjednu
+            var workingHoursForDay = salonForValidation.WorkingHours
+                .FirstOrDefault(w => w.DayOfWeek == model.Date.DayOfWeek);
+
+            if (workingHoursForDay == null)
+            {
+                ModelState.AddModelError("", "Salon ne radi na odabrani dan.");
+                return View(model);
+            }
+
+            // Provjeri da li je odabrano vrijeme unutar radnog vremena
+            if (selectedTime < workingHoursForDay.StartTime || selectedTime > workingHoursForDay.EndTime)
             {
                 ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
                 return View(model);
@@ -96,7 +140,7 @@ namespace BookingSalonApp.Controllers
                 UserId = userId,
                 EmployeeId = model.EmployeeId ?? 0, // If EmployeeId is null, default to 0
                 SalonId = model.SalonId,
-                Date = selectedDate
+                Date = model.Date.Date.Add(selectedTime) // Kombiniraj datum i vrijeme
             };
 
             _context.Reservations.Add(reservation);
@@ -119,8 +163,6 @@ namespace BookingSalonApp.Controllers
 
             return RedirectToAction("MyReservations", new { userId = reservation.UserId });
         }
-
-
         [HttpPost]
         public async Task<IActionResult> Cancel(int id)
         {
