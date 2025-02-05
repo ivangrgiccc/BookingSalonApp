@@ -96,15 +96,26 @@ namespace BookingSalonApp.Controllers
             }
 
             // Pretvori odabrano vrijeme iz 12-satnog formata u 24-satni format
+            // Deklariraj varijablu prije upotrebe
             DateTime parsedTime;
-            if (!DateTime.TryParseExact(model.TimeSlot, "h:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedTime))
+
+            // Pokušaj parsirati vrijeme
+            string[] formats = { "HH:mm", "H:mm", "h:mm tt", "hh:mm tt" }; // Različiti formati
+
+            if (!DateTime.TryParseExact(model.TimeSlot, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedTime))
             {
-                ModelState.AddModelError("", "Neispravan format vremena.");
+                ModelState.AddModelError("", $"Neispravan format vremena: {model.TimeSlot}");
                 return View(model);
             }
+            Console.WriteLine($"Uspješno parsirano vrijeme: {parsedTime}");
+
+
+
+
+            // Ako je parsiranje uspjelo, koristi parsedTime
+            var selectedTime = parsedTime.TimeOfDay;
 
             // Pretvori DateTime u TimeSpan
-            var selectedTime = parsedTime.TimeOfDay;
 
             // Provjera radnog vremena salona
             var salonForValidation = await _context.Salons
