@@ -63,21 +63,8 @@ namespace BookingSalonApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Repopulate ViewData ako je potrebno
-                var salonForRepopulate = await _context.Salons
-                    .Include(s => s.Employees)
-                    .Include(s => s.Services)
-                    .Include(s => s.WorkingHours)
-                    .FirstOrDefaultAsync(s => s.Id == model.SalonId);
-
-                if (salonForRepopulate != null)
-                {
-                    ViewData["Employees"] = salonForRepopulate.Employees.ToList();
-                    ViewData["Services"] = salonForRepopulate.Services.ToList();
-                    ViewData["WorkingHours"] = salonForRepopulate.WorkingHours.ToList();
-                }
-
-                return View(model); // If model is invalid, return with error messages
+                TempData["ErrorMessage"] = "Molimo vas, provjerite unesene podatke.";
+                return View(model); // Umjesto RedirectToAction, koristi View() da ostaneš na istoj stranici
             }
 
             var userId = _userManager.GetUserId(User);
@@ -85,79 +72,61 @@ namespace BookingSalonApp.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 ModelState.AddModelError("", "Korisnik nije autentificiran.");
-                return View(model);
+                TempData["ErrorMessage"] = "Korisnik nije autentificiran."; // Dodajemo poruku u TempData
+                return View(model); // Ponovno koristi View() umjesto RedirectToAction
             }
 
-            // Check if Date is valid
             if (model.Date == default)
             {
                 ModelState.AddModelError("", "Datum nije ispravan.");
+                TempData["ErrorMessage"] = "Datum nije ispravan.";
                 return View(model);
             }
 
-            // Pretvori odabrano vrijeme iz 12-satnog formata u 24-satni format
-            // Deklariraj varijablu prije upotrebe
             DateTime parsedTime;
-
-            // Pokušaj parsirati vrijeme
-            string[] formats = { "HH:mm", "H:mm", "h:mm tt", "hh:mm tt" }; // Različiti formati
+            string[] formats = { "HH:mm", "H:mm", "h:mm tt", "hh:mm tt" };
 
             if (!DateTime.TryParseExact(model.TimeSlot, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedTime))
             {
                 ModelState.AddModelError("", $"Neispravan format vremena: {model.TimeSlot}");
+                TempData["ErrorMessage"] = $"Neispravan format vremena: {model.TimeSlot}";
                 return View(model);
             }
+
+            Console.WriteLine($"Vrijeme primljeno s frontenda: {model.TimeSlot}");
             Console.WriteLine($"Uspješno parsirano vrijeme: {parsedTime}");
 
-
-
-
-            // Ako je parsiranje uspjelo, koristi parsedTime
             var selectedTime = parsedTime.TimeOfDay;
 
-            // Pretvori DateTime u TimeSpan
-
-            // Provjera radnog vremena salona
             var salonForValidation = await _context.Salons
-                .Include(s => s.WorkingHours)
                 .FirstOrDefaultAsync(s => s.Id == model.SalonId);
 
             if (salonForValidation == null)
             {
                 ModelState.AddModelError("", "Salon nije pronađen.");
-                return View(model);
+                TempData["ErrorMessage"] = "Salon nije pronađen.";  // Dodajemo poruku u TempData
+                return View(model);  // Koristi View() umjesto RedirectToAction
             }
 
-            // Pronađi radno vrijeme za odabrani dan u tjednu
-            var workingHoursForDay = salonForValidation.WorkingHours
-                .FirstOrDefault(w => w.DayOfWeek == model.Date.DayOfWeek);
-
-            if (workingHoursForDay == null)
-            {
-                ModelState.AddModelError("", "Salon ne radi na odabrani dan.");
-                return View(model);
-            }
-
-            // Provjeri da li je odabrano vrijeme unutar radnog vremena
-            if (selectedTime < workingHoursForDay.StartTime || selectedTime > workingHoursForDay.EndTime)
+            // Provjera radnog vremena
+            if (selectedTime < salonForValidation.OpeningTime || selectedTime > salonForValidation.ClosingTime)
             {
                 ModelState.AddModelError("", "Odabrani termin nije unutar radnog vremena salona.");
+                TempData["ErrorMessage"] = "Odabrani termin nije unutar radnog vremena salona.";
                 return View(model);
             }
 
-            // Create the Reservation object
             var reservation = new Reservation
             {
                 UserId = userId,
-                EmployeeId = model.EmployeeId ?? 0, // If EmployeeId is null, default to 0
+                EmployeeId = model.EmployeeId ?? 0,
                 SalonId = model.SalonId,
-                Date = model.Date.Date.Add(selectedTime) // Kombiniraj datum i vrijeme
+                Date = model.Date.Date.Add(selectedTime)
             };
 
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            // Handle selected services if any
             if (model.SelectedServices != null)
             {
                 foreach (var serviceId in model.SelectedServices)
@@ -174,6 +143,8 @@ namespace BookingSalonApp.Controllers
 
             return RedirectToAction("MyReservations", new { userId = reservation.UserId });
         }
+
+
         [HttpPost]
         public async Task<IActionResult> Cancel(int id)
         {

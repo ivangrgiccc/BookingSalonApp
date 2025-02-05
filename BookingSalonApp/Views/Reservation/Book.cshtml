@@ -2,6 +2,13 @@
 @model BookingSalonApp.Models.BookingViewModel
 
 <div class="container mt-5">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
     <div class="card shadow-lg p-4 booking-card">
         <h1 class="text-center mb-4 booking-title">📅 Rezervirajte Termin</h1>
 
@@ -140,7 +147,14 @@
     document.getElementById("employeeSelect").addEventListener("change", updateAvailableSlots);
     document.getElementById("dateSelect").addEventListener("change", updateAvailableSlots);
 
-       async function updateAvailableSlots() {
+    // Postavljanje trenutnog datuma kao defaultnog u input polje
+    document.addEventListener("DOMContentLoaded", function () {
+        var dateInput = document.getElementById("dateSelect");
+        var currentDate = new Date().toISOString().split("T")[0]; // Formatira datum u "yyyy-MM-dd"
+        dateInput.value = currentDate; // Postavlja datum u input
+    });
+
+    async function updateAvailableSlots() {
         var salonId = "@Model.SalonId";
         var employeeId = document.getElementById("employeeSelect").value;
         var date = document.getElementById("dateSelect").value;
@@ -173,5 +187,4 @@
             }
         }
     }
-
 </script>

@@ -140,14 +140,41 @@ namespace BookingSalonApp.Controllers
             var checkRoleResult = await CheckAdminRole();
             if (checkRoleResult != null) return checkRoleResult;
 
-            var salon = await _context.Salons.FindAsync(id);
-            if (salon != null)
+            var salon = await _context.Salons
+                .Include(s => s.Reservations)   // Uključi sve rezervacije povezane sa salonom
+                .Include(s => s.Employees)      // Uključi sve zaposlenike povezane sa salonom
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (salon == null) return NotFound();
+
+            // Briši sve rezervacije povezane s ovim salonu
+            foreach (var reservation in salon.Reservations)
             {
-                _context.Salons.Remove(salon);
+                _context.Reservations.Remove(reservation);
+            }
+
+            // Briši sve zaposlenike povezane s ovim salonu
+            foreach (var employee in salon.Employees)
+            {
+                _context.Employees.Remove(employee);
+            }
+
+            // Briši salon
+            _context.Salons.Remove(salon);
+
+            try
+            {
                 await _context.SaveChangesAsync();
             }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", "Error saving to database: " + ex.InnerException?.Message);
+                return View(salon); // Ako dođe do greške, vrati prikaz salona
+            }
+
             return RedirectToAction(nameof(Salons));
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin")]

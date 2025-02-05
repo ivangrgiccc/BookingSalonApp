@@ -9,7 +9,7 @@ namespace BookingSalonApp.Models
     {
         public int Id { get; set; }
         [Required]
-        public DayOfWeek DayOfWeek { get; set; }
+        //public DayOfWeek DayOfWeek { get; set; }
 
         public TimeSpan? StartTime { get; set; }
 
