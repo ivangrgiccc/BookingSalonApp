@@ -175,7 +175,6 @@ namespace BookingSalonApp.Controllers
             return RedirectToAction(nameof(Salons));
         }
 
-
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddService(int salonId, string serviceName, decimal price)
@@ -183,7 +182,26 @@ namespace BookingSalonApp.Controllers
             var checkRoleResult = await CheckAdminRole();
             if (checkRoleResult != null) return checkRoleResult;
 
-            if (!string.IsNullOrWhiteSpace(serviceName))
+            // Provjera naziva usluge
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                ModelState.AddModelError("ServiceName", "Naziv usluge je obavezno polje.");
+            }
+
+            // Provjera cijene
+            if (price <= 0)
+            {
+                ModelState.AddModelError("Price", "Cijena mora biti pozitivna vrijednost.");
+            }
+
+            // Provjera za maksimalno dvije decimale
+            if (price != Math.Round(price, 2))
+            {
+                ModelState.AddModelError("Price", "Cijena može imati najviše dvije decimale.");
+            }
+
+            // Ako su podaci validni, spremit ćemo uslugu
+            if (ModelState.IsValid)
             {
                 var salon = await _context.Salons.Include(s => s.Services).FirstOrDefaultAsync(s => s.Id == salonId);
                 if (salon == null) return NotFound();
@@ -198,15 +216,15 @@ namespace BookingSalonApp.Controllers
                 _context.Services.Add(newService);
                 salon.Services.Add(newService);
 
-                if (ModelState.IsValid)
-                {
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("Salons");
-                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Salons");
             }
 
+            // Ako nije validno, vraćamo formu s greškama
             return View();
         }
+
+
 
         [HttpGet]
         [Authorize(Roles = "Admin")]

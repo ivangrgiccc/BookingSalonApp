@@ -1,9 +1,9 @@
 ﻿@model BookingSalonApp.Models.Salon
 
-<h1>Dodaj uslugu salonu: @Model.Name</h1>
+<h1>Dodaj uslugu salonu: @Model?.Name"</h1>
 
 <form asp-action="AddService" method="post">
-    <input type="hidden" name="salonId" value="@Model.Id" />
+    <input type="hidden" name="salonId" value="@Model?.Id" />  <!-- Koristimo null-safe operator -->
 
     <div class="form-group">
         <label for="serviceName">Ime usluge</label>
@@ -24,7 +24,7 @@
 
 <h2>Postojeće usluge</h2>
 
-@if (Model.Services != null && Model.Services.Any())
+@if (Model?.Services != null && Model.Services.Any())
 {
     <table class="table">
         <thead>
