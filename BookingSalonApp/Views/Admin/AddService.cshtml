@@ -3,7 +3,7 @@
 <h1>Dodaj uslugu salonu: @Model?.Name"</h1>
 
 <form asp-action="AddService" method="post">
-    <input type="hidden" name="salonId" value="@Model?.Id" />  <!-- Koristimo null-safe operator -->
+    <input type="hidden" name="salonId" value="@Model?.Id" /> 
 
     <div class="form-group">
         <label for="serviceName">Ime usluge</label>

@@ -16,7 +16,7 @@ namespace BookingSalonApp.Models
         [Required(ErrorMessage = "Adresa je obavezna.")]
         public string Address { get; set; }
 
-        public int? WorkingHoursId { get; set; }  // Nullable Foreign Key
+        public int? WorkingHoursId { get; set; } 
 
         public List<WorkingHour> WorkingHours { get; set; } = new List<WorkingHour>();
 
@@ -26,7 +26,7 @@ namespace BookingSalonApp.Models
 
         public List<Employee>? Employees { get; set; } = new List<Employee>();
         public List<Service> Services { get; set; } = new List<Service>();
-        public TimeSpan OpeningTime { get; set; } = new TimeSpan(8, 0, 0); // Default 08:00
-        public TimeSpan ClosingTime { get; set; } = new TimeSpan(20, 0, 0); // Default 20:00
+        public TimeSpan OpeningTime { get; set; } = new TimeSpan(8, 0, 0); 
+        public TimeSpan ClosingTime { get; set; } = new TimeSpan(20, 0, 0); 
     }
 }

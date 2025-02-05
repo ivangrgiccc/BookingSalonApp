@@ -36,27 +36,25 @@
     document.addEventListener("DOMContentLoaded", function () {
         let employeeIndex = @Model.Employees.Count;
 
-        // Dodavanje zaposlenika
         document.getElementById("addEmployeeBtn").addEventListener("click", function () {
             let employeeContainer = document.getElementById("employeeContainer");
 
             let newEmployeeDiv = document.createElement("div");
             newEmployeeDiv.classList.add("form-group", "employee");
 
-            newEmployeeDiv.innerHTML =
+            newEmployeeDiv.innerHTML = `
                 <label for="Employees_${employeeIndex}__Name">Ime Zaposlenika</label>
                 <input type="text" name="Employees[${employeeIndex}].Name" class="form-control" placeholder="Ime Zaposlenika" required />
-                <input type="hidden" name="Employees[${employeeIndex}].SalonId" value="@Model.Id" />
+                <input type="hidden" name="Employees[${employeeIndex}].SalonId" value="${@Model.Id}" />
                 <button type="button" class="btn btn-danger btn-sm mt-2 removeEmployeeBtn">Obriši</button>
                 <span class="text-danger field-validation-valid" data-valmsg-for="Employees[${employeeIndex}].Name" data-valmsg-replace="true"></span>
-            ;
+            `;
 
             employeeContainer.appendChild(newEmployeeDiv);
 
             employeeIndex++;
         });
 
-        // Brisanje zaposlenika
         document.addEventListener("click", function (event) {
             if (event.target.classList.contains("removeEmployeeBtn")) {
                 event.target.parentElement.remove();

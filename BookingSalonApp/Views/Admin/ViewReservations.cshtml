@@ -1,0 +1,61 @@
+﻿@model BookingSalonApp.Models.ViewReservationsViewModel
+
+<h1>Rezervacije za salon: @Model.Salon.Name</h1>
+
+<div class="mb-3">
+    <label for="salonSelect">Odaberite salon:</label>
+    <select id="salonSelect" class="form-control">
+        @foreach (var salon in Model.Salons)
+        {
+            <option value="@salon.Id" selected="@(salon.Id == Model.Salon.Id ? "selected" : null)">@salon.Name</option>
+        }
+    </select>
+</div>
+
+@if (Model.Salon.Reservations != null && Model.Salon.Reservations.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ime klijenta</th>
+                <th>Datum rezervacije</th>
+                <th>Vrijeme</th>
+                <th>Usluga</th>
+                <th>Zaposlenik</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in Model.Salon.Reservations)
+            {
+                <tr>
+                    <td>@reservation.User?.UserName</td>
+                    <td>@reservation.Date.ToString("dd.MM.yyyy")</td>
+                    <td>@reservation.Date.ToString("HH:mm")</td>
+                    <td>
+                        @foreach (var reservationService in reservation.ReservationServices)
+                        {
+                            <span>@reservationService.Service?.Name</span>
+                            <br />
+                        }
+                    </td>
+                    <td>@(reservation.Employee?.Name ?? "Nema zaposlenika")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nema rezervacija za ovaj salon.</p>
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const salonSelect = document.getElementById("salonSelect");
+
+        salonSelect.addEventListener("change", function () {
+            const newSalonId = salonSelect.value;
+            window.location.href = "/Admin/ViewReservations?salonId=" + newSalonId;
+        });
+    });
+</script>

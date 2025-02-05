@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
+using BookingSalonApp.Models;
 
 namespace BookingSalonApp.Controllers
 {
@@ -41,8 +42,15 @@ namespace BookingSalonApp.Controllers
             if (checkRoleResult != null) return checkRoleResult;
 
             var salons = _context.Salons.Include(s => s.Employees).ToList();
+
+            if (salons.Any())
+            {
+                ViewBag.SalonId = salons.First().Id; 
+            }
+
             return View(salons);
         }
+
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -110,7 +118,7 @@ namespace BookingSalonApp.Controllers
                 }
                 catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", "Error saving to database: " + ex.InnerException?.Message);
+                    ModelState.AddModelError("", "Greska u zapisivanju u bazu: " + ex.InnerException?.Message);
                 }
             }
 
@@ -141,25 +149,22 @@ namespace BookingSalonApp.Controllers
             if (checkRoleResult != null) return checkRoleResult;
 
             var salon = await _context.Salons
-                .Include(s => s.Reservations)   // Uključi sve rezervacije povezane sa salonom
-                .Include(s => s.Employees)      // Uključi sve zaposlenike povezane sa salonom
+                .Include(s => s.Reservations)   
+                .Include(s => s.Employees)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (salon == null) return NotFound();
 
-            // Briši sve rezervacije povezane s ovim salonu
             foreach (var reservation in salon.Reservations)
             {
                 _context.Reservations.Remove(reservation);
             }
 
-            // Briši sve zaposlenike povezane s ovim salonu
             foreach (var employee in salon.Employees)
             {
                 _context.Employees.Remove(employee);
             }
 
-            // Briši salon
             _context.Salons.Remove(salon);
 
             try
@@ -169,7 +174,7 @@ namespace BookingSalonApp.Controllers
             catch (DbUpdateException ex)
             {
                 ModelState.AddModelError("", "Error saving to database: " + ex.InnerException?.Message);
-                return View(salon); // Ako dođe do greške, vrati prikaz salona
+                return View(salon);
             }
 
             return RedirectToAction(nameof(Salons));
@@ -182,25 +187,21 @@ namespace BookingSalonApp.Controllers
             var checkRoleResult = await CheckAdminRole();
             if (checkRoleResult != null) return checkRoleResult;
 
-            // Provjera naziva usluge
             if (string.IsNullOrWhiteSpace(serviceName))
             {
                 ModelState.AddModelError("ServiceName", "Naziv usluge je obavezno polje.");
             }
 
-            // Provjera cijene
             if (price <= 0)
             {
                 ModelState.AddModelError("Price", "Cijena mora biti pozitivna vrijednost.");
             }
 
-            // Provjera za maksimalno dvije decimale
             if (price != Math.Round(price, 2))
             {
                 ModelState.AddModelError("Price", "Cijena može imati najviše dvije decimale.");
             }
 
-            // Ako su podaci validni, spremit ćemo uslugu
             if (ModelState.IsValid)
             {
                 var salon = await _context.Salons.Include(s => s.Services).FirstOrDefaultAsync(s => s.Id == salonId);
@@ -220,7 +221,6 @@ namespace BookingSalonApp.Controllers
                 return RedirectToAction("Salons");
             }
 
-            // Ako nije validno, vraćamo formu s greškama
             return View();
         }
 
@@ -309,9 +309,39 @@ namespace BookingSalonApp.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Salons));
-
-
-
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ViewReservations(int salonId)
+        {
+            var checkRoleResult = await CheckAdminRole();
+            if (checkRoleResult != null) return checkRoleResult;
+
+            var salons = await _context.Salons.ToListAsync();
+
+            var salon = await _context.Salons
+                .Include(s => s.Reservations)
+                    .ThenInclude(r => r.ReservationServices)
+                        .ThenInclude(rs => rs.Service)
+                .Include(s => s.Reservations)
+                    .ThenInclude(r => r.Employee) 
+                .FirstOrDefaultAsync(s => s.Id == salonId);
+
+            if (salon == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ViewReservationsViewModel
+            {
+                Salons = salons,   
+                Salon = salon       
+            };
+
+            return View(model);
+        }
+
+
     }
 }

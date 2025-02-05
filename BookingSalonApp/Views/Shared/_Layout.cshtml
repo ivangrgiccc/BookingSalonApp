@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["BookingA"] - BookingSalonApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingSalonApp.styles.css" asp-append-version="true" />
+
     <style>
         html, body {
             height: 100%;
@@ -54,7 +54,6 @@
             color: black;
         }
 
-        /* Tooltip for navbar items */
         .nav-item .nav-link {
             position: relative;
         }
@@ -73,7 +72,78 @@
                 white-space: nowrap;
             }
 
-     
+        .auth-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .auth-form h2 {
+                text-align: center;
+                margin-bottom: 20px;
+                font-family: 'Playfair Display', cursive;
+                color: #333;
+            }
+
+            .auth-form .form-control {
+                border-radius: 5px;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                transition: border-color 0.3s ease;
+            }
+
+                .auth-form .form-control:focus {
+                    border-color: #007bff;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+                }
+
+            .auth-form .btn-primary {
+                width: 100%;
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #007bff;
+                border: none;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+            }
+
+                .auth-form .btn-primary:hover {
+                    background-color: #0056b3;
+                }
+
+            .auth-form .text-danger {
+                color: #dc3545;
+                font-size: 14px;
+            }
+
+            .auth-form .form-group {
+                margin-bottom: 15px;
+            }
+
+            .auth-form .form-check-label {
+                font-size: 14px;
+            }
+
+            .auth-form .register-link,
+            .auth-form .login-link {
+                text-align: center;
+                margin-top: 15px;
+            }
+
+                .auth-form .register-link a,
+                .auth-form .login-link a {
+                    color: #007bff;
+                    text-decoration: none;
+                }
+
+                    .auth-form .register-link a:hover,
+                    .auth-form .login-link a:hover {
+                        text-decoration: underline;
+                    }
     </style>
 </head>
 <body>
@@ -81,8 +151,8 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BOOKINGSALONAPP</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -91,21 +161,27 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Salon" asp-action="Index" data-bs-tooltip="Explore our salons">Salons</a>
                         </li>
 
-                        <li class="nav-item">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <a class="nav-link text-dark"
-                                   href="/Reservation/MyReservations?userId=@User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)"
-                                   data-bs-tooltip="View your bookings">My Reservations</a>
-                            }
-                        </li>
-
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   href="/Reservation/MyReservations?userId=@User.FindFirstValue(ClaimTypes.NameIdentifier)"
+                                   data-bs-tooltip="View your bookings">My Reservations</a>
+                            </li>
+
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Salons" data-bs-tooltip="Manage salons">Admin Panel</a>
+                                </li>
+                            }
+
+                            @if (ViewBag.SalonId != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" href="@Url.Action("ViewReservations", "Admin", new { salonId = ViewBag.SalonId })">
+                                        Rezervacije
+                                    </a>
                                 </li>
                             }
 
@@ -132,6 +208,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

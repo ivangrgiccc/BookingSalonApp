@@ -16,7 +16,6 @@
             <input type="hidden" asp-for="SalonId" />
             <input type="hidden" asp-for="SalonName" />
 
-            <!-- Odabir Usluga -->
             <div class="mb-4">
                 <label class="form-label fw-bold">💈 Odaberite Usluge:</label>
                 <div class="services-list">
@@ -40,7 +39,6 @@
                 <span asp-validation-for="SelectedServices" class="text-danger"></span>
             </div>
 
-            <!-- Odabir Zaposlenika -->
             <div class="mb-4">
                 <label class="form-label fw-bold">👨‍🔧 Odaberite Zaposlenika:</label>
                 <select asp-for="EmployeeId" class="form-select" required id="employeeSelect">
@@ -60,14 +58,12 @@
                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
 
-            <!-- Datum -->
             <div class="mb-4">
                 <label class="form-label fw-bold">📅 Odaberite Datum:</label>
                 <input type="date" asp-for="Date" id="dateSelect" class="form-control mb-3" required>
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
-            <!-- Slobodni Termini -->
             <div class="mb-4">
                 <label class="form-label fw-bold">🕒 Slobodni Termini:</label>
                 <select asp-for="TimeSlot" id="availableSlots" class="form-select" required>
@@ -76,7 +72,6 @@
                 <span asp-validation-for="TimeSlot" class="text-danger"></span>
             </div>
 
-            <!-- Gumb za Slanje -->
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary btn-lg booking-button">
                     ✅ Potvrdi Rezervaciju
@@ -84,12 +79,10 @@
             </div>
         </form>
 
-        <!-- Pregled Validacije -->
         <div asp-validation-summary="All" class="text-danger mt-3"></div>
     </div>
 </div>
 
-<!-- Prilagođeni CSS -->
 <style>
     body {
         background-color: #f8f9fa;
@@ -142,16 +135,14 @@
     }
 </style>
 
-<!-- JavaScript za dinamičko učitavanje slobodnih termina -->
 <script>
     document.getElementById("employeeSelect").addEventListener("change", updateAvailableSlots);
     document.getElementById("dateSelect").addEventListener("change", updateAvailableSlots);
 
-    // Postavljanje trenutnog datuma kao defaultnog u input polje
     document.addEventListener("DOMContentLoaded", function () {
         var dateInput = document.getElementById("dateSelect");
-        var currentDate = new Date().toISOString().split("T")[0]; // Formatira datum u "yyyy-MM-dd"
-        dateInput.value = currentDate; // Postavlja datum u input
+        var currentDate = new Date().toISOString().split("T")[0]; 
+        dateInput.value = currentDate; 
     });
 
     async function updateAvailableSlots() {
