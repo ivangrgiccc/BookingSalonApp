@@ -4,31 +4,29 @@ using BookingSalonApp.Models;
 
 namespace BookingSalonApp.Data
 {
-    public class AppDbContext : IdentityDbContext<User> // Ako koristiš Identity, naslijedi od IdentityDbContext<User>
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // Definiraj DbSet-ove
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Salon> Salons { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<ReservationService> ReservationServices { get; set; }
-        public DbSet<WorkingHour> WorkingHours { get; set; } // Dodan DbSet za WorkingHours
+        public DbSet<WorkingHour> WorkingHours { get; set; } 
         public DbSet<AvailableSlot> AvailableSlots { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);  // Primijeni Identity model
+            base.OnModelCreating(modelBuilder); 
 
-            // Definiraj odnos Salon → Employee
             modelBuilder.Entity<Employee>()
                 .HasOne(e => e.Salon)
-                .WithMany(s => s.Employees) // Poveži zaposlenike s salonom
+                .WithMany(s => s.Employees) 
                 .HasForeignKey(e => e.SalonId)
-                .OnDelete(DeleteBehavior.Cascade); // Ako se salon obriše, brišu se i zaposlenici
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // Definiraj odnos Reservation → User
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reservations)
