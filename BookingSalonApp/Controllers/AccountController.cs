@@ -84,5 +84,9 @@ namespace BookingSalonApp.Controllers
         {
             return View();
         }
+        public IActionResult NotAuthorized()
+        {
+            return View();
+        }
     }
 }

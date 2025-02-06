@@ -34,6 +34,10 @@ namespace BookingSalonApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Book(int salonId)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("NotAuthorized", "Account");
+            }
             var salon = await _context.Salons
                 .Include(s => s.Employees)
                 .Include(s => s.Services)
@@ -206,5 +210,6 @@ namespace BookingSalonApp.Controllers
 
             return Json(availableSlots);
         }
+       
     }
 }
